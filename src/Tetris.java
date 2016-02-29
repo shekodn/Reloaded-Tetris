@@ -1,8 +1,17 @@
 
 
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.LinkedList;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -91,6 +100,11 @@ public class Tetris extends JFrame {
 	 * The current column of our tile.
 	 */
 	private int currentCol;
+        
+        /**
+	 * Name of the file where the game's progress is saved.
+	 */
+        private String nombreArchivo;    //Nombre del archivo.
 	
 	/**
 	 * The current row of our tile.
@@ -168,6 +182,11 @@ public class Tetris extends JFrame {
                 souTurnCW = new SoundClip("TurnCW.wav");
                 souClick = new SoundClip("click.wav");
                 
+               /*
+		* Initialize File Name
+		*/
+                
+                nombreArchivo = "LoadFile.txt";//nombre del archivo
 
                
 		
@@ -269,69 +288,93 @@ public class Tetris extends JFrame {
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
-				switch(e.getKeyCode()) {
-				
-				/*
+
+                            switch (e.getKeyCode()) {
+
+                                /*
 				 * Drop - When released, we set the speed of the logic timer
 				 * back to whatever the current game speed is and clear out
 				 * any cycles that might still be elapsed.
-				 */
-				case KeyEvent.VK_S:
-					logicTimer.setCyclesPerSecond(gameSpeed);
-					logicTimer.reset();
-					break;
-				}
-				
-			}
-			
-		});
-		
-		/*
+                                 */
+                                case KeyEvent.VK_S:
+                                    logicTimer.setCyclesPerSecond(gameSpeed);
+                                    logicTimer.reset();
+                                    break;
+                                /*
+				 * Save Game - When pressed, saves the current
+                                 *       process of the game.
+                                 */
+                                case KeyEvent.VK_G:
+                                    try {
+                                        grabaArchivo();
+                                    } catch (IOException ex) {
+                                        System.out.println("Error en " + ex.toString());
+                                    }
+                                    break;
+
+                                /*
+				 * Load Game - When pressed, starts the game 
+                                        based on what is saved.
+                                 */
+                                case KeyEvent.VK_C:
+                                    try {
+                                        leeArchivo();
+                                    } catch (IOException ex) {
+                                        System.out.println("Error en " + ex.toString());
+                                    }
+                                    break;
+
+                            }
+
+                    }
+
+        });
+
+        /*
 		 * Here we resize the frame to hold the BoardPanel and SidePanel instances,
 		 * center the window on the screen, and show it to the user.
-		 */
-		pack();
-		setLocationRelativeTo(null);
-		setVisible(true);
-	}
-	
-	/**
-	 * Starts the game running. Initializes everything and enters the game loop.
-	 */
-	private void startGame() {
-		/*
+         */
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    /**
+     * Starts the game running. Initializes everything and enters the game loop.
+     */
+    private void startGame() {
+        /*
 		 * Initialize our random number generator, logic timer, and new game variables.
-		 */
-		this.random = new Random();
-		this.isNewGame = true;
-		this.gameSpeed = 1.0f;
-		
-		/*
+         */
+        this.random = new Random();
+        this.isNewGame = true;
+        this.gameSpeed = 1.0f;
+
+        /*
 		 * Setup the timer to keep the game from running before the user presses enter
 		 * to start it.
-		 */
-		this.logicTimer = new Clock(gameSpeed);
-		logicTimer.setPaused(true);
-		
-		while(true) {
-			//Get the time that the frame started.
-			long start = System.nanoTime();
-			
-			//Update the logic timer.
-			logicTimer.update();
-			
-			/*
+         */
+        this.logicTimer = new Clock(gameSpeed);
+        logicTimer.setPaused(true);
+
+        while (true) {
+            //Get the time that the frame started.
+            long start = System.nanoTime();
+
+            //Update the logic timer.
+            logicTimer.update();
+
+            /*
 			 * If a cycle has elapsed on the timer, we can update the game and
 			 * move our current piece down.
-			 */
-			if(logicTimer.hasElapsedCycle()) {
-				updateGame();
-			}
-		
-			//Decrement the drop cool down if necessary.
-			if(dropCooldown > 0) {
-				dropCooldown--;
+             */
+            if (logicTimer.hasElapsedCycle()) {
+                updateGame();
+            }
+
+            //Decrement the drop cool down if necessary.
+            if (dropCooldown > 0) {
+                dropCooldown--;
 			}
 			
 			//Display the window to the user.
@@ -593,6 +636,72 @@ public class Tetris extends JFrame {
 	public int getPieceRotation() {
 		return currentRotation;
 	}
+        
+        /**
+     * Metodo que agrega la informacion del vector al archivo.
+     *
+     * @throws IOException
+     */
+    public void grabaArchivo() throws IOException {
+        PrintWriter fpwArchivo = new PrintWriter(new FileWriter(nombreArchivo));
+
+        fpwArchivo.println(getScore());//score
+//        fpwArchivo.println(getLevel());//level
+//        fpwArchivo.println(getPieceType());//pieceType
+//        fpwArchivo.println(getNextPieceType());//next piece Type
+//        fpwArchivo.println(getPieceCol());//column
+//        fpwArchivo.println(getPieceRow());//row
+//        fpwArchivo.println(getPieceRotation());//rotation
+        
+        fpwArchivo.close();
+    }
+    
+     /**
+     * Metodo que lee a informacion de un archivo y lo agrega a un vector.
+     *
+     * @throws IOException
+     */
+    public void leeArchivo() throws IOException {
+        BufferedReader finArchivo;
+        try {
+            finArchivo = new BufferedReader(new FileReader(nombreArchivo));
+        } catch (FileNotFoundException e) {
+
+        }
+        finArchivo = new BufferedReader(new FileReader(nombreArchivo));
+        //read score
+        String sLinea = finArchivo.readLine();
+        score = Integer.parseInt(sLinea);
+//        
+//        //read nivel
+//        sLinea = finArchivo.readLine();
+//        level = Integer.parseInt(sLinea);
+//        
+//        //read currentType
+//        sLinea = finArchivo.readLine();
+//      
+//        //read next Type
+//        sLinea = finArchivo.readLine();
+//        
+//        
+//        //read column
+//        sLinea = finArchivo.readLine();
+//        currentCol = Integer.parseInt(sLinea);
+//        
+//        
+//        //read row
+//        sLinea = finArchivo.readLine();
+//        currentRow = Integer.parseInt(sLinea);
+//       
+//        //read rotation
+//        sLinea = finArchivo.readLine();
+//        currentRotation = Integer.parseInt(sLinea);
+//        
+//        
+        
+        finArchivo.close();
+
+    }
 
 	/**
 	 * Entry-point of the game. Responsible for creating and starting a new
