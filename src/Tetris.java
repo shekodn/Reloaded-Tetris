@@ -489,6 +489,7 @@ public class Tetris extends JFrame {
 		this.currentRow = currentType.getSpawnRow();
 		this.currentRotation = 0;
 		this.nextType = TileType.values()[random.nextInt(TYPE_COUNT)];
+                souClick.play();
                 
                 
 		
@@ -500,7 +501,7 @@ public class Tetris extends JFrame {
 			this.isGameOver = true;
                         souBackgroundB.stop();
 			logicTimer.setPaused(true);
-                        souClick.play();
+                        
 		}		
 	}
 
@@ -525,6 +526,7 @@ public class Tetris extends JFrame {
 		int right = currentType.getRightInset(newRotation);
 		int top = currentType.getTopInset(newRotation);
 		int bottom = currentType.getBottomInset(newRotation);
+                System.out.println("Piece type: " + getPieceType());
 		
 		/*
 		 * If the current piece is too far to the left or right, move the piece away from the edges
@@ -711,6 +713,8 @@ public class Tetris extends JFrame {
 	public static void main(String[] args) {
 		Tetris tetris = new Tetris();
 		tetris.startGame();
+                
+               
 	}
 
 }

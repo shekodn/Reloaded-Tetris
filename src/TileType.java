@@ -259,6 +259,8 @@ public enum TileType {
 		
 		this.spawnCol = 5 - (dimension >> 1);
 		this.spawnRow = getTopInset(0);
+                
+                
 	}
 	
 	/**
