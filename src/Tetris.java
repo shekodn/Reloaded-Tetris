@@ -127,6 +127,12 @@ public class Tetris extends JFrame {
 	 * Counter clockwise turn Music.
 	 */
 	private SoundClip souTurnCCW;
+        
+        /**
+	 * Counter clockwise turn Music.
+	 */
+        
+        private SoundClip souClick;
 		
 	/**
 	 * Creates a new Tetris instance. Sets up the window's properties,
@@ -155,11 +161,12 @@ public class Tetris extends JFrame {
                 
                 
                /*
-		* Initialize audios 
+		* Initialize Sound Clips 
 		*/
                 souBackgroundB = new SoundClip("BackgroundB.wav");
                 souTurnCCW = new SoundClip("TurnCCW.wav");
                 souTurnCW = new SoundClip("TurnCW.wav");
+                souClick = new SoundClip("click.wav");
                 
 
                
@@ -216,6 +223,7 @@ public class Tetris extends JFrame {
 				case KeyEvent.VK_Q:
 					if(!isPaused) {
 						rotatePiece((currentRotation == 0) ? 3 : currentRotation - 1);
+                                                souTurnCCW.play(); 
 					}
 					break;
 				
@@ -228,6 +236,7 @@ public class Tetris extends JFrame {
 				case KeyEvent.VK_E:
 					if(!isPaused) {
 						rotatePiece((currentRotation == 3) ? 0 : currentRotation + 1);
+                                                souTurnCW.play(); 
 					}
 					break;
 					
@@ -437,6 +446,8 @@ public class Tetris extends JFrame {
 		this.currentRow = currentType.getSpawnRow();
 		this.currentRotation = 0;
 		this.nextType = TileType.values()[random.nextInt(TYPE_COUNT)];
+                
+                
 		
 		/*
 		 * If the spawn point is invalid, we need to pause the game and flag that we've lost
@@ -444,7 +455,9 @@ public class Tetris extends JFrame {
 		 */
 		if(!board.isValidAndEmpty(currentType, currentCol, currentRow, currentRotation)) {
 			this.isGameOver = true;
+                        souBackgroundB.stop();
 			logicTimer.setPaused(true);
+                        souClick.play();
 		}		
 	}
 
