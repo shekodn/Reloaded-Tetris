@@ -11,9 +11,10 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioSystem;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 
-public class SoundClip {
+public class SoundClip implements Serializable {
 
     private AudioInputStream sample;
     private Clip clip;

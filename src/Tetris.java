@@ -4,15 +4,24 @@ import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
@@ -22,7 +31,7 @@ import javax.swing.JFrame;
  * @author Brendan Jones
  *
  */
-public class Tetris extends JFrame {
+public class Tetris extends JFrame implements Serializable {
 	
 	/**
 	 * The Serial Version UID.
@@ -84,7 +93,7 @@ public class Tetris extends JFrame {
 	/**
 	 * The clock that handles the update logic.
 	 */
-	private Clock logicTimer;
+	transient private Clock logicTimer;
 				
 	/**
 	 * The current type of tile.
@@ -130,23 +139,23 @@ public class Tetris extends JFrame {
         /**
 	 * Background Music.
 	 */
-	private SoundClip souBackgroundB;
+	transient private SoundClip souBackgroundB;
         
         /**
 	 * clockwise turn Music.
 	 */
-	private SoundClip souTurnCW;
+	transient private SoundClip souTurnCW;
         
         /**
 	 * Counter clockwise turn Music.
 	 */
-	private SoundClip souTurnCCW;
+	transient private SoundClip souTurnCCW;
         
         /**
 	 * Counter clockwise turn Music.
 	 */
         
-        private SoundClip souClick;
+        transient private SoundClip souClick;
 		
 	/**
 	 * Creates a new Tetris instance. Sets up the window's properties,
@@ -186,7 +195,7 @@ public class Tetris extends JFrame {
 		* Initialize File Name
 		*/
                 
-                nombreArchivo = "LoadFile.txt";//nombre del archivo
+                nombreArchivo = "LoadFile.dat";//nombre del archivo
 
                
 		
@@ -312,19 +321,23 @@ public class Tetris extends JFrame {
                                     }
                                     break;
 
-                                /*
+                            /*
 				 * Load Game - When pressed, starts the game 
                                         based on what is saved.
-                                 */
-                                case KeyEvent.VK_C:
+                             */
+                            case KeyEvent.VK_C:
+                                try {
                                     try {
                                         leeArchivo();
-                                    } catch (IOException ex) {
-                                        System.out.println("Error en " + ex.toString());
-                                    }
-                                    break;
+                                    } catch (ClassNotFoundException ex) {
 
-                            }
+                                    }
+                                } catch (IOException ex) {
+                                    System.out.println("Error en " + ex.toString());
+                                }
+                                break;
+
+                        }
 
                     }
 
@@ -474,6 +487,8 @@ public class Tetris extends JFrame {
 		spawnPiece();
                 souBackgroundB.play();
 	}
+        
+        
 		
 	/**
 	 * Spawns a new piece and resets our piece's variables to their default
@@ -526,7 +541,6 @@ public class Tetris extends JFrame {
 		int right = currentType.getRightInset(newRotation);
 		int top = currentType.getTopInset(newRotation);
 		int bottom = currentType.getBottomInset(newRotation);
-                System.out.println("Piece type: " + getPieceType());
 		
 		/*
 		 * If the current piece is too far to the left or right, move the piece away from the edges
@@ -645,27 +659,34 @@ public class Tetris extends JFrame {
      * @throws IOException
      */
     public void grabaArchivo() throws IOException {
-        PrintWriter fpwArchivo = new PrintWriter(new FileWriter(nombreArchivo));
-        ObjectInputStream inFile = new ObjectInputStream(new BufferedInputStream
-        (new FileInputStream("firstBinFile.dat")));
-
-        fpwArchivo.println(getScore());//score
-        fpwArchivo.println(getLevel());//level
-        fpwArchivo.println(getPieceType());//pieceType
-        fpwArchivo.println(getNextPieceType());//next piece Type
-        fpwArchivo.println(getPieceCol());//column
-        fpwArchivo.println(getPieceRow());//row
-        fpwArchivo.println(getPieceRotation());//rotation
+//        PrintWriter fpwArchivo = new PrintWriter(new FileWriter(nombreArchivo));
         
-        for (int iI=0; iI < 22; iI++){//rows
-            
-            for(int iJ=0; iJ < 10; iJ++){//cols
-                if (board.isOccupied(iI,iJ)){
-                     fpwArchivo.println(board.getTile(iI, iJ));
-                }
-            }
-            
-        }
+        ObjectOutputStream fpwArchivo = new ObjectOutputStream
+            (new BufferedOutputStream(new FileOutputStream(nombreArchivo)));
+        
+        
+
+        fpwArchivo.writeObject(this);//score
+        
+        
+        
+//        
+//        fpwArchivo.println(getLevel());//level
+//        fpwArchivo.println(getPieceType());//pieceType
+//        fpwArchivo.println(getNextPieceType());//next piece Type
+//        fpwArchivo.println(getPieceCol());//column
+//        fpwArchivo.println(getPieceRow());//row
+//        fpwArchivo.println(getPieceRotation());//rotation
+//        
+//        for (int iI=0; iI < 22; iI++){//rows
+//            
+//            for(int iJ=0; iJ < 10; iJ++){//cols
+//                if (board.isOccupied(iI,iJ)){
+//                     fpwArchivo.println(board.getTile(iI, iJ));
+//                }
+//            }
+//            
+//        }
         
         fpwArchivo.close();
     }
@@ -675,44 +696,89 @@ public class Tetris extends JFrame {
      *
      * @throws IOException
      */
-    public void leeArchivo() throws IOException {
-        BufferedReader finArchivo;
+    public void leeArchivo() throws IOException, ClassNotFoundException {
+        //BufferedReader finArchivo;
         try {
-            finArchivo = new BufferedReader(new FileReader(nombreArchivo));
+            //finArchivo = new BufferedReader(new FileReader(nombreArchivo));
+            ObjectInputStream finArchivo = new ObjectInputStream
+                (new BufferedInputStream(new FileInputStream(nombreArchivo)));
+            
+            Tetris tetris = (Tetris)finArchivo.readObject();
+            this.board = tetris.board;
+            this.currentCol = tetris.currentCol;
+            //this.accessibleContext = tetris.accessibleContext;
+            this.currentRotation = tetris.currentRotation;
+            this.currentRow =  tetris.currentRow;
+            this.currentType = tetris.currentType;
+            //this.dropCooldown = tetris.dropCooldown;
+            //this.gameSpeed = tetris.gameSpeed;
+            //this.isGameOver = tetris.isGameOver;
+            //this.isNewGame = tetris.isNewGame;
+            //this.isPaused = tetris.isPaused;
+            this.level = tetris.level;
+            //this.logicTimer = tetris.logicTimer;
+            //this.nextType = tetris.nextType;
+            //this.nombreArchivo = tetris.nombreArchivo;
+            //this.random = tetris.random;
+            //this.rootPane = tetris.rootPane;
+            //this.rootPaneCheckingEnabled = tetris.rootPaneCheckingEnabled;
+            this.score = tetris.score;
+            this.side= tetris.side;
+            //this.souBackgroundB = tetris.souBackgroundB;
+            //this.souClick = tetris.souClick;
+            //this.souTurnCCW = tetris.souTurnCCW;
+            //this.souTurnCW = tetris.souTurnCW;
+            //logicTimer.reset();
+            
+            
+            
+            
+            
+            
+            updateGame();
+            
+       finArchivo.close();
+            
+            
         } catch (FileNotFoundException e) {
 
         }
-        finArchivo = new BufferedReader(new FileReader(nombreArchivo));
-        //read score
-        String sLinea = finArchivo.readLine();
-        score = Integer.parseInt(sLinea);
         
-        //read nivel
-        sLinea = finArchivo.readLine();
-        level = Integer.parseInt(sLinea);
+//        ObjectInputStream finArchivo = new ObjectInputStream
+//                (new BufferedInputStream(new FileInputStream(nombreArchivo)));
+//        
+//        Tetris tetris = (Tetris)finArchivo.readObject();
         
-        //read currentType
-        sLinea = finArchivo.readLine();
-      
-        //read next Type
-        sLinea = finArchivo.readLine();
+//read score
+//        String sLinea = finArchivo.readLine();
+//        score = Integer.parseInt(sLinea);
+//        
+//        //read nivel
+//        sLinea = finArchivo.readLine();
+//        level = Integer.parseInt(sLinea);
+//        
+//        //read currentType
+//        sLinea = finArchivo.readLine();
+//      
+//        //read next Type
+//        sLinea = finArchivo.readLine();
+//        
+//        
+//        //read column
+//        sLinea = finArchivo.readLine();
+//        currentCol = Integer.parseInt(sLinea);
+//        
+//        
+//        //read row
+//        sLinea = finArchivo.readLine();
+//        currentRow = Integer.parseInt(sLinea);
+//       
+//        //read rotation
+//        sLinea = finArchivo.readLine();
+//        currentRotation = Integer.parseInt(sLinea);
         
-        
-        //read column
-        sLinea = finArchivo.readLine();
-        currentCol = Integer.parseInt(sLinea);
-        
-        
-        //read row
-        sLinea = finArchivo.readLine();
-        currentRow = Integer.parseInt(sLinea);
-       
-        //read rotation
-        sLinea = finArchivo.readLine();
-        currentRotation = Integer.parseInt(sLinea);
-        
-        
-       finArchivo.close();
+//        
+//       finArchivo.close();
 
     }
 
