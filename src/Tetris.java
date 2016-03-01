@@ -659,6 +659,7 @@ public class Tetris extends JFrame implements Serializable {
      * @throws IOException
      */
     public void grabaArchivo() throws IOException {
+<<<<<<< HEAD
 //        PrintWriter fpwArchivo = new PrintWriter(new FileWriter(nombreArchivo));
         
         ObjectOutputStream fpwArchivo = new ObjectOutputStream
@@ -671,12 +672,22 @@ public class Tetris extends JFrame implements Serializable {
         
         
 //        
+=======
+        PrintWriter fpwArchivo = new PrintWriter(new FileWriter(nombreArchivo));
+
+        fpwArchivo.println(getScore());//score
+<<<<<<< HEAD
+>>>>>>> parent of 7acbe7b... antes de poner un binary
+=======
+>>>>>>> parent of 7acbe7b... antes de poner un binary
 //        fpwArchivo.println(getLevel());//level
 //        fpwArchivo.println(getPieceType());//pieceType
 //        fpwArchivo.println(getNextPieceType());//next piece Type
 //        fpwArchivo.println(getPieceCol());//column
 //        fpwArchivo.println(getPieceRow());//row
 //        fpwArchivo.println(getPieceRotation());//rotation
+<<<<<<< HEAD
+<<<<<<< HEAD
 //        
 //        for (int iI=0; iI < 22; iI++){//rows
 //            
@@ -687,6 +698,10 @@ public class Tetris extends JFrame implements Serializable {
 //            }
 //            
 //        }
+=======
+>>>>>>> parent of 7acbe7b... antes de poner un binary
+=======
+>>>>>>> parent of 7acbe7b... antes de poner un binary
         
         fpwArchivo.close();
     }
@@ -743,6 +758,7 @@ public class Tetris extends JFrame implements Serializable {
         } catch (FileNotFoundException e) {
 
         }
+<<<<<<< HEAD
         
 //        ObjectInputStream finArchivo = new ObjectInputStream
 //                (new BufferedInputStream(new FileInputStream(nombreArchivo)));
@@ -752,6 +768,15 @@ public class Tetris extends JFrame implements Serializable {
 //read score
 //        String sLinea = finArchivo.readLine();
 //        score = Integer.parseInt(sLinea);
+=======
+        finArchivo = new BufferedReader(new FileReader(nombreArchivo));
+        //read score
+        String sLinea = finArchivo.readLine();
+        score = Integer.parseInt(sLinea);
+<<<<<<< HEAD
+>>>>>>> parent of 7acbe7b... antes de poner un binary
+=======
+>>>>>>> parent of 7acbe7b... antes de poner un binary
 //        
 //        //read nivel
 //        sLinea = finArchivo.readLine();
@@ -776,9 +801,23 @@ public class Tetris extends JFrame implements Serializable {
 //        //read rotation
 //        sLinea = finArchivo.readLine();
 //        currentRotation = Integer.parseInt(sLinea);
+<<<<<<< HEAD
+<<<<<<< HEAD
         
 //        
 //       finArchivo.close();
+=======
+//        
+//        
+        
+        finArchivo.close();
+>>>>>>> parent of 7acbe7b... antes de poner un binary
+=======
+//        
+//        
+        
+        finArchivo.close();
+>>>>>>> parent of 7acbe7b... antes de poner un binary
 
     }
 

@@ -253,7 +253,7 @@ public class BoardPanel extends JPanel implements Serializable  {
 	 * @param y The y coordinate to check.
 	 * @return Whether or not the tile is occupied.
 	 */
-	public boolean isOccupied(int x, int y) {
+	private boolean isOccupied(int x, int y) {
 		return tiles[y][x] != null;
 	}
 	
