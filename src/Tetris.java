@@ -646,14 +646,26 @@ public class Tetris extends JFrame {
      */
     public void grabaArchivo() throws IOException {
         PrintWriter fpwArchivo = new PrintWriter(new FileWriter(nombreArchivo));
+        ObjectInputStream inFile = new ObjectInputStream(new BufferedInputStream
+        (new FileInputStream("firstBinFile.dat")));
 
         fpwArchivo.println(getScore());//score
-//        fpwArchivo.println(getLevel());//level
-//        fpwArchivo.println(getPieceType());//pieceType
-//        fpwArchivo.println(getNextPieceType());//next piece Type
-//        fpwArchivo.println(getPieceCol());//column
-//        fpwArchivo.println(getPieceRow());//row
-//        fpwArchivo.println(getPieceRotation());//rotation
+        fpwArchivo.println(getLevel());//level
+        fpwArchivo.println(getPieceType());//pieceType
+        fpwArchivo.println(getNextPieceType());//next piece Type
+        fpwArchivo.println(getPieceCol());//column
+        fpwArchivo.println(getPieceRow());//row
+        fpwArchivo.println(getPieceRotation());//rotation
+        
+        for (int iI=0; iI < 22; iI++){//rows
+            
+            for(int iJ=0; iJ < 10; iJ++){//cols
+                if (board.isOccupied(iI,iJ)){
+                     fpwArchivo.println(board.getTile(iI, iJ));
+                }
+            }
+            
+        }
         
         fpwArchivo.close();
     }
@@ -674,34 +686,33 @@ public class Tetris extends JFrame {
         //read score
         String sLinea = finArchivo.readLine();
         score = Integer.parseInt(sLinea);
-//        
-//        //read nivel
-//        sLinea = finArchivo.readLine();
-//        level = Integer.parseInt(sLinea);
-//        
-//        //read currentType
-//        sLinea = finArchivo.readLine();
-//      
-//        //read next Type
-//        sLinea = finArchivo.readLine();
-//        
-//        
-//        //read column
-//        sLinea = finArchivo.readLine();
-//        currentCol = Integer.parseInt(sLinea);
-//        
-//        
-//        //read row
-//        sLinea = finArchivo.readLine();
-//        currentRow = Integer.parseInt(sLinea);
-//       
-//        //read rotation
-//        sLinea = finArchivo.readLine();
-//        currentRotation = Integer.parseInt(sLinea);
-//        
-//        
         
-        finArchivo.close();
+        //read nivel
+        sLinea = finArchivo.readLine();
+        level = Integer.parseInt(sLinea);
+        
+        //read currentType
+        sLinea = finArchivo.readLine();
+      
+        //read next Type
+        sLinea = finArchivo.readLine();
+        
+        
+        //read column
+        sLinea = finArchivo.readLine();
+        currentCol = Integer.parseInt(sLinea);
+        
+        
+        //read row
+        sLinea = finArchivo.readLine();
+        currentRow = Integer.parseInt(sLinea);
+       
+        //read rotation
+        sLinea = finArchivo.readLine();
+        currentRotation = Integer.parseInt(sLinea);
+        
+        
+       finArchivo.close();
 
     }
 
