@@ -676,19 +676,14 @@ public class Tetris extends JFrame implements Serializable {
         PrintWriter fpwArchivo = new PrintWriter(new FileWriter(nombreArchivo));
 
         fpwArchivo.println(getScore());//score
-<<<<<<< HEAD
->>>>>>> parent of 7acbe7b... antes de poner un binary
-=======
->>>>>>> parent of 7acbe7b... antes de poner un binary
+
 //        fpwArchivo.println(getLevel());//level
 //        fpwArchivo.println(getPieceType());//pieceType
 //        fpwArchivo.println(getNextPieceType());//next piece Type
 //        fpwArchivo.println(getPieceCol());//column
 //        fpwArchivo.println(getPieceRow());//row
 //        fpwArchivo.println(getPieceRotation());//rotation
-<<<<<<< HEAD
-<<<<<<< HEAD
-//        
+
 //        for (int iI=0; iI < 22; iI++){//rows
 //            
 //            for(int iJ=0; iJ < 10; iJ++){//cols
@@ -698,10 +693,7 @@ public class Tetris extends JFrame implements Serializable {
 //            }
 //            
 //        }
-=======
->>>>>>> parent of 7acbe7b... antes de poner un binary
-=======
->>>>>>> parent of 7acbe7b... antes de poner un binary
+
         
         fpwArchivo.close();
     }
